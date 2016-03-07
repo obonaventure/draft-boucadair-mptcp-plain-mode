@@ -66,14 +66,14 @@ multiple networks (e.g., DSL, LTE, WLAN) to optimize the usage of its
 network attachments.  Because of the lack of MPTCP support at the
 server side, some service providers now consider a network-assisted
 model that relies upon the activation of a dedicated function called
-MPTCP Concentrator.  This document focuses on a deployment scheme
+MPTCP Concentrator. This document focuses on a deployment scheme
 where the identity of the MPTCP Concentrator(s) is explicitly
 configured on connected hosts.</t>
 
 <t>This document specifies an MPTCP option that is used to avoid an
 encapsulation scheme between the CPE and the MPTCP Concentrator.
-Also, this document specifies how UDP traffic can be distributed
-among available paths without requiring any encapsulation scheme.</t>
+Also, this document specifies how non-TCP traffic can be distributed
+among available paths without requiring a specific encapsulation scheme.</t>
 
 
 
@@ -92,7 +92,7 @@ among available paths without requiring any encapsulation scheme.</t>
 connected to multiple networks (e.g., DSL, LTE, WLAN) to optimize the
 usage of such resources, see for example <xref target="I-D.deng-mptcp-proxy"/> or
 <xref target="RFC4908"/>.  This deployment scenario relies on MPTCP proxies located
-on both the CPE and network sides (Figure 1).  The latter plays the
+on both the CPE and network sides (<xref target="fig-design"/>).  The latter plays the
 role of traffic concentrator.  A concentrator terminates the MPTCP
 sessions established from a CPE, before redirecting traffic into a
 legacy TCP session.</t>
@@ -128,7 +128,7 @@ information of the MPTCP concentrator on a host (e.g.,
 one or multiple IP addresses.  Also, it assumes the various network
 attachments provided to an MPTCP-enabled CPE are managed by the same
 administrative entity.  Additional assumptions are listed in
-Section 3.</t>
+<xref target="sec:assumptions"/>.</t>
 
 <t>This document explains how a plain transport mode, where packets are
 exchanged between the CPE and the concentrator without requiring the
@@ -246,12 +246,12 @@ is concerned.</t>
 </section>
 <section anchor="sec:plain-mode-option" title="Plain Mode MPTCP Option">
 
-<t>The format of the Plain Mode MPTCP option is shown in Figure 2.</t>
+<t>The format of the Plain Mode MPTCP option is shown in <xref target="fig-plain-mode-option"/>.</t>
 
 <figure title="Plain Mode MPTCP Option" anchor="fig-plain-mode-option"><artwork><![CDATA[
    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
   +---------------+---------------+-------+-------+---------------+
-  |     Kind      |     Length    |SubType|D|U|       Flag Bits   |
+  |     Kind      |     Length    |SubType|D|Flag |   Protocol    |
   +---------------+---------------+-------+-------+---------------+
   |          Address (IPv4 - 4 octets / IPv6 - 16 octets)         |
   +-------------------------------+-------------------------------+
@@ -262,27 +262,32 @@ is concerned.</t>
 
 <t>The description of the fields is as follows:</t>
 
-<t>o  Kind and Length: are the same as in <xref target="RFC6824"/>.</t>
+<t>o  Kind and Length: are the same as specified in <xref target="RFC6824"/>.</t>
 
-<t>o  Subtype: to be defined by IANA (Section 6).</t>
+<t>o  Subtype: to be defined by IANA (<xref target="sec-iana"/>).</t>
 
 <t>o  D-bit (direction bit): This flag indicates whether the enclosed IP
-   address (and a port number) reflects the source or destination IP
-   address (and port).  When the D-bit is set, the enclosed IP
-   address must be interpreted as the source IP address.  When the
+   address (and optionally port number) indicates the original
+   source or destination IP address (and port).  When the D-bit is set, 
+   the enclosed IP
+   address must be interpreted as the source IP address. When the
    D-bit is unset, the enclosed IP address must be interpreted as the
    destination IP address.</t>
 
-<t>o  U-bit (UDP bit): The use of this flag is detailed in Section 5.</t>
+<t>o  Protocol: This field indicates the Transport layer protocol that is carried
+   in the MPTCP connection. Value 6 corresponds to TCP, value 17 for UDP. The
+   support for other protocols is outside the scope of this version of this
+   document.</t>
 
 <t>o  The “Flag” bits are reserved bits for future assignment as
-   additional flag bits.  These additional flag bits MUST each be set
+   additional flag bits. These additional flag bits MUST each be set
    to zero and MUST be ignored upon receipt.</t>
 
-<t>o  Address: Includes a source or destination IP address.  The address
+<t>o  Address: Includes a source or destination IP address. The address
    family is determined by the “Length” field.</t>
 
-<t>o  Port: May be used to carry a port number.</t>
+<t>o  Port: May be used to carry a port number (a source port if
+   the D-bit is set and a destination port otherwise).</t>
 
 </section>
 <section anchor="sec:plain-mode-theory" title="Theory of Operation">
@@ -320,7 +325,7 @@ is concerned.</t>
  by the host or altered by the CPE.
 
  The original destination IP address is copied into a dedicated
- MPTCP option called Plain Mode MPTCP option (see Section 4.2).
+ MPTCP option called Plain Mode MPTCP option (see {{sec:plain-mode-option}}).
  Because of the limited TCP option space, it is RECOMMENDED to
  implement the solution specified in {{I-D.ietf-tcpm-tcp-edo}}.  As
  a reminder, {{I-D.touch-tcpm-tcp-syn-ext-opt}} specifies a
@@ -373,7 +378,7 @@ is concerned.</t>
 </section>
 <section anchor="sec-flow-example" title="Flow Example">
 
-<t>A typical flow exchange is shown in Figure 3.</t>
+<t>A typical flow exchange is shown in <xref target="fig-flow-example"/>.</t>
 
 <t>This example assumes no NAT is located between the CPE and the
 concentrator.</t>
@@ -467,9 +472,9 @@ and implementation-specific.</t>
 because the required subflows that are dedicated to transport UDP
 traffic are already in place (either at the CPE or the Concentrator).</t>
 
-<t>A flow example is shown in Figure 4.</t>
+<t>A flow example is shown in <xref target="fig-udp-mpaths"/>.</t>
 
-<figure title="Distributing UDP packets over multiple paths" anchor="fig-upd-mpaths"><artwork><![CDATA[
+<figure title="Distributing UDP packets over multiple paths" anchor="fig-udp-mpaths"><artwork><![CDATA[
     +--------+                                    +------------+
     |  CPE   |                                    |Concentrator|
     +--------+                                    +------------+
