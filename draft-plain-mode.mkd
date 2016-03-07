@@ -199,32 +199,41 @@ The following assumptions are made:
 o  The logic for mounting network attachments by a host is
    deployment- and implementation-specific and is out of scope of
    this document.
+
 o  The Network Provider that manages the various network attachments
    (including the concentrators) can enforce authentication and
    authorization policies using appropriate mechanisms that are out
    of scope of this document.
+
 o  Policies can be enforced by a concentrator instance operated by
    the Network Provider to manage both upstream and downstream
-   traffic.  These policies may be subscriber-specific, connection-
+   traffic. These policies may be subscriber-specific, connection-
    specific or system-wide.
+
 o  The concentrator may be notified about the results of monitoring
    (including probing) the various network legs to service a
-   customer, a group of customers, a given region, etc.  No
+   customer, a group of customers, a given region, etc. No
    assumption is made by this document about how these monitoring
    (including probing) operations are executed.
+
 o  An MPTCP-enabled, multi-interfaced host that is directly connected
    to one or multiple access networks is allocated addresses/prefixes
    via legacy mechanisms (e.g., DHCP) supported by the various
-   available network attachments.  The host may be assigned the same
+   available network attachments. The host may be assigned the same
    or distinct IP address/prefix via the various available network
    attachments.
+
 o  The location of the concentrator(s) is deployment-specific.
    Network Providers may choose to adopt centralized or distributed
    (even if they may not be present on the different network
-   accesses) designs, etc.  Nevertheless, in order to take advantage
+   accesses) designs, etc. Nevertheless, in order to take advantage
    of MPTCP, the location of the concentrator should not jeopardize
    packet forwarding performance for traffic sent from or directed to
    connected hosts.
+
+o  The path between the CPE and the concentrator is managed by the network
+   operator. It is assumed that there are no middleboxes that modify/add/delete
+   TCP options or modify the payload of TCP segments.
 
 Introducing the MPTCP Plain Transport Mode {#sec:plain-mode}
 ========================================== 
