@@ -126,15 +126,15 @@ legacy TCP session.
 {: #fig-design title="'Network-Assisted' MPTCP Design"}
 
 Both implicit and explicit models are considered to steer traffic
-towards an MPTCP Concentrator.  This document focuses on the explicit
+towards an MPTCP Concentrator. This document focuses on the explicit
 model that consists in configuring explicitly the reachability
 information of the MPTCP concentrator on a host (e.g.,
 {{I-D.boucadair-mptcp-dhc}}).
 
-This specification assumes an MPTCP Concentrator is reachable through
-one or multiple IP addresses.  Also, it assumes the various network
+This specification assumes that an MPTCP Concentrator is reachable through
+one or multiple IP addresses. Also, it assumes the various network
 attachments provided to an MPTCP-enabled CPE are managed by the same
-administrative entity.  Additional assumptions are listed in
+administrative entity. Additional assumptions are listed in
 {{sec:assumptions}}.
 
 This document explains how a plain transport mode, where packets are
@@ -142,20 +142,20 @@ exchanged between the CPE and the concentrator without requiring the
 activation of any encapsulation scheme (e.g., IP-in-IP {{RFC2473}}, GRE
 {{RFC1701}}, SOCKS {{RFC1928}}, etc.), can be enabled.
 
-Also, this document investigates an alternate track where UDP flows
-can be distributed among available paths without requiring any
+Also, this document investigates an alternate track where non-TCP flows
+can be distributed among available paths without requiring a different
 encapsulation scheme.
 
 The solution in this document does not require the modification of
 the binding information base (BIB) structure maintained by both the
-CPE and the Concentrator.  Likewise, this approach does not infer any
+CPE and the Concentrator. Likewise, this approach does not infer any
 modification of the Network Address Translator (NAT) functions that
 may reside in both the CPE and the device that embeds the
 concentrator.
 
 The solution also works properly when NATs are present in the network
 between the CPE and the Concentrator, unlike solutions that rely upon
-GRE tunneling.  Likewise, the solution accommodates deployments that
+GRE tunneling. Likewise, the solution accommodates deployments that
 involve CGN (Carrier Grade NAT) upstream the Concentrator.
 
 Terminology
@@ -169,7 +169,7 @@ o  Customer-facing interface: is an interface of the MPTCP
 
 o  MPTCP Proxy: is a software module that is responsible for
    transforming a TCP connection into an MPTCP connection, and vice
-   versa.  Typically, an MPTCP proxy can be embedded in a CPE and/or
+   versa. Typically, an MPTCP proxy can be embedded in a CPE and/or
    a Concentrator.
 
 o  MPTCP leg: Refers to a network segment on which MPTCP is used to
@@ -177,8 +177,8 @@ o  MPTCP leg: Refers to a network segment on which MPTCP is used to
 
 o  MPTCP Concentrator (or concentrator): refers to a functional
    element that is responsible for aggregating the traffic of a group
-   of CPEs.  This element is located upstream in the network.  One or
-   multiple concentrators can be deployed in the network side to
+   of CPEs. This element is located upstream in the network. One or
+   several concentrators can be deployed in the network side to
    assist MPTCP-enabled CPEs to establish MPTCP connections via
    available network attachments.
 
@@ -193,7 +193,6 @@ o  MPTCP Concentrator (or concentrator): refers to a functional
 
 Assumptions {#sec:assumptions}
 ===========
-
 
 The following assumptions are made:
 
