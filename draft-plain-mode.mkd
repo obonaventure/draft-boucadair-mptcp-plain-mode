@@ -243,7 +243,7 @@ An Alternative to Encapsulation {#sec:plain-mode-alternative}
 
 The design option for aggregating various network accesses often
 relies upon the use of an encapsulation scheme (such as GRE) between
-the CPE and the Concentrator.  The use of encapsulation is motivated
+the CPE and the Concentrator. The use of encapsulation is motivated
 by the need to steer traffic through the concentrator and also to
 allow the distribution of UDP flows among the available paths without
 requiring any advanced traffic engineering tweaking technique in the
@@ -255,7 +255,7 @@ transport mode between the CPE and the Concentrator.
 
 The use of a plain transport mode does not require the upgrade of any
 intermediate function (security, TCP optimizer, etc.) that may be
-located on-path.  Thus, the introduction of MPTCP concentrators in
+located on-path. Thus, the introduction of MPTCP concentrators in
 operational networks to operate plain mode does not add any extra
 complexity as far as the operation of possible intermediate functions
 is concerned.
@@ -289,9 +289,8 @@ o  Subtype: to be defined by IANA ({{sec-iana}}).
 o  D-bit (direction bit): This flag indicates whether the enclosed IP
    address (and optionally port number) indicates the original
    source or destination IP address (and port).  When the D-bit is set, 
-   the enclosed IP
-   address must be interpreted as the source IP address. When the
-   D-bit is unset, the enclosed IP address must be interpreted as the
+   the enclosed IP address must be interpreted as the source IP address. 
+   When the D-bit is unset, the enclosed IP address must be interpreted as the
    destination IP address.
 
 o  Protocol: This field indicates the Transport layer protocol that is carried
@@ -321,20 +320,20 @@ Plain mode operation is as follows:
      subflows are transformed into TCP packets carried over a MPTCP
      connection.  The decision-making process to decide whether a
      flow should be MPTCP-tagged or not is local to the Concentrator
-     and the CPE.  It depends on the policies provisioned by the
-     network provider.  As such, the decision-making process is
+     and the CPE. It depends on the policies provisioned by the
+     network provider. As such, the decision-making process is
      policy-driven, implementation- and deployment-specific.
 
 (3)  MPTCP packets are sent using a plain transport mode (i.e.,
      without any encapsulation header).
 
      The source IP address and source port number are those assigned
-     locally by the CPE.  Because multiple IP addresses may be
+     locally by the CPE. Because multiple IP addresses may be
      available to the CPE, the address used to rewrite the source IP
      address for an outgoing packet forwarded through a given network
      attachment (typically, a WAN interface) MUST be associated with
-     that network attachment.  It is assumed that ingress filtering
-     ({{RFC2827}}) is implemented at the boundaries of the networks to
+     that network attachment. It is assumed that ingress filtering
+     {{RFC2827}} is implemented at the boundaries of the networks to
      prevent any spoofing attack.
 
      The destination IP address is replaced by the CPE with one of
@@ -345,7 +344,7 @@ Plain mode operation is as follows:
 
      The original destination IP address is copied into a dedicated
      MPTCP option called Plain Mode MPTCP option (see {{sec:plain-mode-option}}).
-     Because of the limited TCP option space, it is RECOMMENDED to
+     Because of the limited TCP option space,  it is RECOMMENDED to
      implement the solution specified in {{I-D.ietf-tcpm-tcp-edo}}.  As
      a reminder, {{I-D.touch-tcpm-tcp-syn-ext-opt}} specifies a
      proposal for TCP SYN extended option space.
@@ -365,9 +364,9 @@ Plain mode operation is as follows:
 
      The concentrator may be configured to behave as either a 1:1
      address translator or a N:1 translator where the same address is
-     shared among multiple CPEs.  Network Providers should be aware
+     shared among multiple CPEs. Network Providers should be aware
      of the complications that may arise if a given IP address/prefix
-     is shared among multiple hosts (see {{RFC6967}}).  Whether these
+     is shared among multiple hosts (see {{RFC6967}}). Whether these
      complications apply or not is deployment-specific.
 
      The Concentrator should preserve the same IP address that was
@@ -443,79 +442,7 @@ Legend:
 Non-TCP Traffic {#sec-non-tcp}
 ===============
 
-From an application standpoint, there may be a value to distribute
-UDP datagrams among available network attachments for the sake of
-network resource optimisation, for example.
-
-Unlike existing proposals that rely upon encapsulation schemes such
-as IP-in-IP or GRE, this document suggests the use of MPTCP features
-to control how UDP datagrams are distributed among existing network
-attachments.  UDP datagrams are therefore transformed into TCP-
-formatted packets.
-
-The CPE and the Concentrator establish a set of MPTCP subflows.
-These subflows are used to transport UDP datagrams that are
-distributed among existent subflows.  TCP session tracking may not be
-enabled for the set of subflows that are dedicated to transport UDP
-traffic.  The establishment of these subflows is not conditioned by
-the receipt of UDP packets; instead, these subflows are initiated
-upon CPE reboot or when network conditions change (e.g., whenever a
-new Concentrator is discovered or a new IP address is assigned to the
-Concentrator).  Additional MPTCP connections may be established to
-anticipate UDP traffic to be distributed among several paths.  The
-maximum number of MPTCP connections that can be dedicated to UDP
-traffic may be configured locally to the CPE and the Concentrator.
-How this parameter is configured is implementation and deployment-
-specific.
-
-When the CPE (or the Concentrator) transforms a UDP packet into a TCP
-one, it must insert the Plain Mode MPTCP Option with the U-bit set.
-When setting the source IP address, the destination IP address, and
-the IP address enclosed in the Plain Mode MPTCP Option, the same
-considerations specified in Section 4.3 must be followed.
-
-In addition, the CPE (or the Concentrator) must replace the UDP
-header with a TCP header.  Upon receipt of the packet with the U-bit
-set, the Concentrator (or the CPE) transforms the packet into a UDP
-packet and follows the same considerations specified in Section 4.3.
-Both the CPE and the Concentrator may be configured to disable some
-features (e.g., reordering).  Enabling these features is deployment
-and implementation-specific.
-
-Relaying UDP packets is not conditioned by TCP session establishment
-because the required subflows that are dedicated to transport UDP
-traffic are already in place (either at the CPE or the Concentrator).
-
-A flow example is shown in {{fig-udp-mpaths}}.
-
-
-~~~~~
-    +--------+                                    +------------+
-    |  CPE   |                                    |Concentrator|
-    +--------+                                    +------------+
-         | /------------------------------------------\ |
-         ||    Dedicated MPTCP SubFlows for UDP        ||
-         | \------------------------------------------/ |
-         |                                              |
-  src=s_@|src=cpe_@1                         dst=conc_@1|src=conc_@
----UDP-->|---------------------TCP--------------------->|---UDP-->
-  dst=d_@|        Plain Mode MPTCP Option(U,d_@)        |dst=d_@
-                                  ....
-  src=s_@|src=cpe_@2                         dst=conc_@2|src=conc_@
----UDP-->|---------------------TCP--------------------->|---UDP-->
-  dst=d_@|        Plain Mode MPTCP Option(U,d_@)        |dst=d_@
-         |                                              |
-                                  ....
-  src=s_@|src=cpe_@1                         dst=conc_@1|src=conc_@
----UDP-->|---------------------TCP--------------------->|---UDP-->
- dst=d1_@|        Plain Mode MPTCP Option(U,d_@)        |dst=d1_@
-         |                                              |
-  src=s_@|src=cpe_@1                         dst=conc_@2|src=conc_@
----UDP-->|---------------------TCP--------------------->|---UDP-->
- dst=d1_@|        Plain Mode MPTCP Option(U,d_@)        |dst=d1_@
-         |                                              |
-~~~~~
-{:fig #fig-udp-mpaths title="Distributing UDP packets over multiple paths"}
+The support for non-TCP traffic will be discussed in the subsequent revision of this document.
 
 IANA Considerations {#sec-iana}
 ===================
@@ -533,23 +460,23 @@ concentrator must not leak such sensitive information outside a local
 domain.
 
 Means to protect the MPTCP concentrator against Denial-of-Service
-(DoS) attacks must be enabled.  Such means include the enforcement of
-ingress filtering policies at the boundaries of the network.  In
+(DoS) attacks must be enabled. Such means include the enforcement of
+ingress filtering policies at the boundaries of the network. In
 order to prevent exhausting the resources of the concentrator by
 creating an aggressive number of simultaneous subflows for each MPTCP
 connection, the administrator should limit the number of allowed
 subflows per host for a given connection.
 
 Attacks outside the domain can be prevented if ingress filtering is
-enforced.  Nevertheless, attacks from within the network between a
+enforced. Nevertheless, attacks from within the network between a
 host and a concentrator instance are yet another actual threat.
 Means to ensure that illegitimate nodes cannot connect to a network
 should be implemented.
 
 Traffic theft is also a risk if an illegitimate concentrator is
-inserted in the path.  Indeed, inserting an illegitimate concentrator
+inserted in the path. Indeed, inserting an illegitimate concentrator
 in the forwarding path allows to intercept traffic and can therefore
-provide access to sensitive data issued by or destined to a host.  To
+provide access to sensitive data issued by or destined to a host. To
 mitigate this threat, secure means to discover a concentrator (for
 non-transparent modes) should be enabled.
 
